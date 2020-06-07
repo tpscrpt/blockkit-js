@@ -1,7 +1,7 @@
 {
   "name": "blockkit-js",
   "description": "Helper library w/ IntelliSense support for Slack BlockKit",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "keywords": [
     "slack",
     "blockkit",
@@ -12,6 +12,8 @@
   ],
   "author": "Jeremi Gendron <gendronjeremi@gmail.com>",
   "license": "MIT",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "build": "yarn clean && yarn tsc -p tsconfig.build.json",
     "clean": "del dist"
