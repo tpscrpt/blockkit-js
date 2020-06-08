@@ -1,93 +1,62 @@
-import assert from "assert";
-import { Block } from "./block/block";
-import { PlainText } from "./text/plain";
-import {
-  ActionsBlock,
-  ContextBlock,
-  DividerBlock,
-  ImageBlock,
-  InputBlock,
-  SectionBlock,
-} from "./block";
+import { Block } from "./block";
+import { PlainText } from "./object";
 
 export type ViewType = "modal" | "home";
 
-export class View {
-  public type: ViewType;
-  public blocks: Block[];
-  public private_metadata?: string;
-  public callback_id?: string;
-  public external_id?: string;
-
-  constructor(params: {
-    type: ViewType;
-    blocks: Block[];
-    private_metadata?: string;
-    callback_id?: string;
-    external_id?: string;
-  }) {
-    assert(params.blocks.length <= 100, "Max blocks length is 100");
-    if (params.private_metadata)
-      assert(
-        params.private_metadata.length <= 3000,
-        "Max private metadata length is 3000 characters",
-      );
-    if (params.callback_id)
-      assert(params.callback_id.length <= 255, "Max callback id length is 255 characters");
-
-    this.type = params.type;
-    this.blocks = params.blocks;
-    this.private_metadata = params.private_metadata;
-    this.callback_id = params.callback_id;
-    this.external_id = params.external_id;
-  }
+export interface View {
+  type: ViewType;
+  /**
+   * An array of blocks that defines the content of the view.
+   * Max of 100 blocks.
+   */
+  blocks: Block[];
+  /**
+   * An optional string that will be sent to your app in view_submission and block_actions events.
+   * Max length of 3000 characters.
+   */
+  private_metadata?: string;
+  /**
+   * An identifier to recognize interactions and submissions of this particular view.
+   * Don't use this to store sensitive information (use private_metadata instead).
+   * Max length of 255 characters.
+   */
+  callback_id?: string;
+  /**
+   * A custom identifier that must be unique for all views on a per-team basis.
+   */
+  external_id?: string;
 }
 
-export class ModalView extends View {
-  public title: PlainText;
-  public close?: PlainText;
-  public submit?: PlainText;
-  public clear_on_close?: boolean;
-  public notify_on_close?: boolean;
-
-  constructor(params: {
-    blocks: (ActionsBlock | ContextBlock | DividerBlock | ImageBlock | InputBlock | SectionBlock)[];
-    title: PlainText;
-    close?: PlainText;
-    submit?: PlainText;
-    clear_on_close?: boolean;
-    notify_on_close?: boolean;
-    private_methadata?: string;
-    callback_id?: string;
-    external_id?: string;
-  }) {
-    super({
-      type: "modal",
-      blocks: params.blocks,
-      private_metadata: params.private_methadata,
-      callback_id: params.callback_id,
-      external_id: params.external_id,
-    });
-
-    assert(params.title.text.length <= 25, "Max title length is 25 characters");
-    if (params.close) assert(params.close.text.length <= 24, "Max close length is 24 characters");
-    if (params.submit) assert(params.submit.text.length <= 24, "Max close length is 24 characters");
-
-    this.title = params.title;
-    this.close = params.close;
-    this.submit = params.submit;
-    this.clear_on_close = params.clear_on_close;
-    this.notify_on_close = params.notify_on_close;
-  }
+export interface ModalView extends View {
+  type: "modal";
+  /**
+   * The title that appears in the top-left of the modal.
+   * Must be a plain_text text element with a max length of 24 characters.
+   */
+  title: PlainText;
+  /**
+   * An optional plain_text element that defines the text displayed in the close button at the bottom-right of the view.
+   * Max length of 24 characters.
+   */
+  close?: PlainText;
+  /**
+   * An optional plain_text element that defines the text displayed in the submit button at the bottom-right of the view.
+   * submit is required when an input block is within the blocks array.
+   * Max length of 24 characters.
+   */
+  submit?: PlainText;
+  /**
+   * When set to true, clicking on the close button will clear all views in a modal and close it.
+   * Defaults to false.
+   */
+  clear_on_close?: boolean;
+  /**
+   * Indicates whether Slack will send your request URL a view_closed event when a user clicks the close button.
+   * Defaults to false.
+   */
+  notify_on_close?: boolean;
 }
 
-export class HomeView extends View {
-  constructor(params: {
-    blocks: (ActionsBlock | ContextBlock | DividerBlock | ImageBlock | SectionBlock)[];
-    private_metadata?: string;
-    callback_id?: string;
-    external_id?: string;
-  }) {
-    super({ type: "home", ...params });
-  }
+export interface HomeView extends View {
+  type: "home";
 }

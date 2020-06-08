@@ -9,6 +9,6 @@
     "lib": ["ESNext"],
     "allowJs": false,
     "checkJs": false,
-    "noEmit": false,
+    "noEmit": false
   }
 }
